@@ -4,6 +4,7 @@
 /build
 
 .idea/
+.env
 
 # Logs
 logs
