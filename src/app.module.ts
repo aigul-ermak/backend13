@@ -3,14 +3,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './db/database.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserModule } from './users/user-module';
-import { TestingModule } from '@nestjs/testing';
+import { UsersModule } from './users/users.module';
+import { TestingModule } from './testing/testing-module';
 
 @Module({
   imports: [
     MongooseModule.forRoot(process.env.MONGO_URI as string),
     DatabaseModule,
-    UserModule,
+    UsersModule,
     TestingModule,
   ],
   controllers: [AppController],
