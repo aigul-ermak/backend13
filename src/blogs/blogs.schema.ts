@@ -22,7 +22,7 @@ export class Blog {
   createdAt: Date;
 
   @Prop()
-  isMemberShip: boolean;
+  isMembership: boolean;
 
   static create(name: string, description: string, websiteUrl: string): Blog {
     const blog = new Blog();
@@ -30,7 +30,7 @@ export class Blog {
     blog.description = description;
     blog.websiteUrl = websiteUrl;
     blog.createdAt = new Date();
-    blog.isMemberShip = true;
+    blog.isMembership = false;
     return blog;
   }
 }
