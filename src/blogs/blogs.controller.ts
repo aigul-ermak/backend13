@@ -38,12 +38,12 @@ export class BlogsController {
     );
 
     return {
-      id: createdBlog.id.toString(),
-      name: createdBlog.name,
-      description: createdBlog.description,
-      websiteUrl: createdBlog.websiteUrl,
-      createdAt: createdBlog.createdAt,
-      isMembership: createdBlog.isMembership,
+      id: createdBlog!._id.toString(),
+      name: createdBlog!.name,
+      description: createdBlog!.description,
+      websiteUrl: createdBlog!.websiteUrl,
+      createdAt: createdBlog!.createdAt,
+      isMembership: createdBlog!.isMembership,
     };
   }
 

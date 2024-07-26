@@ -19,7 +19,7 @@ export class BlogsService {
     const blog = Blog.create(name, description, websiteUrl);
     const createdBlog = await this.blogsRepo.insert(blog);
 
-    return await this.findById(createdBlog.id);
+    return await this.blogsRepo.findById(createdBlog.id);
   }
   async findAll(): Promise<Blog[]> {
     return this.blogsRepo.findAll();
