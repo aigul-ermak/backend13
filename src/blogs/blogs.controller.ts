@@ -6,6 +6,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { Blog } from './blogs.schema';
@@ -48,8 +49,31 @@ export class BlogsController {
   }
 
   @Get()
-  async getAllBlogs(): Promise<Blog[]> {
-    return this.blogsService.findAll();
+  async getAllBlogs(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+  ): Promise<{
+    pagesCount: number;
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    items: Blog[];
+  }> {
+    page = Number(page);
+    pageSize = Number(pageSize);
+    const { blogs, totalCount } = await this.blogsService.findAllPaginated(
+      page,
+      pageSize,
+    );
+    const pagesCount = Math.ceil(totalCount / pageSize);
+
+    return {
+      pagesCount,
+      page,
+      pageSize,
+      totalCount,
+      items: blogs,
+    };
   }
 
   @Get(':id')

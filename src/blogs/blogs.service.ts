@@ -42,4 +42,28 @@ export class BlogsService {
   async deleteBlogById(id: string): Promise<void> {
     await this.blogsRepo.deleteById(id);
   }
+
+  async findAllPaginated(
+    page: number,
+    pageSize: number,
+  ): Promise<{ blogs: any[]; totalCount: number }> {
+    const { blogs, totalCount } = await this.blogsRepo.findAllPaginated(
+      page,
+      pageSize,
+    );
+
+    const mappedBlogs = blogs.map((blog) => ({
+      id: blog._id.toString(),
+      name: blog.name,
+      description: blog.description,
+      websiteUrl: blog.websiteUrl,
+      createdAt: blog.createdAt,
+      isMembership: blog.isMembership,
+    }));
+
+    return {
+      blogs: mappedBlogs,
+      totalCount,
+    };
+  }
 }

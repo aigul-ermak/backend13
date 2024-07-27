@@ -27,4 +27,21 @@ export class BlogsRepository {
   async findByName(name: string): Promise<Blog | null> {
     return this.blogModel.findOne({ name }).exec();
   }
+
+  async findAllPaginated(
+    page: number,
+    pageSize: number,
+  ): Promise<{ blogs: BlogDocument[]; totalCount: number }> {
+    const skip = (page - 1) * pageSize;
+    const [blogs, totalCount] = await Promise.all([
+      this.blogModel
+        .find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(pageSize)
+        .exec(), // Sort by createdAt
+      this.blogModel.countDocuments(),
+    ]);
+    return { blogs, totalCount };
+  }
 }
