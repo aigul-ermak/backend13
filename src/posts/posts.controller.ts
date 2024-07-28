@@ -24,10 +24,14 @@ export class PostsController {
     );
 
     return {
-      id: createdPost._id,
+      id: createdPost.id,
       title: createdPost.title,
       shortDescription: createdPost.shortDescription,
       content: createdPost.content,
+      blogId: createdPost.blogId,
+      blogName: createdPost.blogName,
+      createdAt: createdPost.createdAt,
+      extendedLikesInfo: createdPost.extendedLikesInfo,
     };
   }
 }
