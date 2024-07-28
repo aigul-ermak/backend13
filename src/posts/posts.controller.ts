@@ -1,5 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { PostsService } from './posts.service';
+import { Blog } from '../blogs/blogs.schema';
 
 @Controller('posts')
 export class PostsController {
@@ -32,6 +33,34 @@ export class PostsController {
       blogName: createdPost.blogName,
       createdAt: createdPost.createdAt,
       extendedLikesInfo: createdPost.extendedLikesInfo,
+    };
+  }
+
+  @Get()
+  async getAllPosts(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+  ): Promise<{
+    pagesCount: number;
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    items: Blog[];
+  }> {
+    page = Number(page);
+    pageSize = Number(pageSize);
+    const { posts, totalCount } = await this.postsService.findAllPaginated(
+      page,
+      pageSize,
+    );
+    const pagesCount = Math.ceil(totalCount / pageSize);
+
+    return {
+      pagesCount,
+      page,
+      pageSize,
+      totalCount,
+      items: posts,
     };
   }
 }

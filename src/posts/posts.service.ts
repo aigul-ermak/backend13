@@ -25,7 +25,13 @@ export class PostsService {
       throw new Error('Blog not found');
     }
 
-    const post = Post.create(title, shortDescription, content, blogId);
+    const post = Post.create(
+      title,
+      shortDescription,
+      content,
+      blogId,
+      blog.name,
+    );
     const createdPost = await this.postsRepository.insert(post);
 
     return {
@@ -42,6 +48,37 @@ export class PostsService {
         myStatus: 'None',
         newestLikes: [],
       },
+    };
+  }
+
+  async findAllPaginated(
+    page: number,
+    pageSize: number,
+  ): Promise<{ posts: any[]; totalCount: number }> {
+    const { posts, totalCount } = await this.postsRepository.findAllPaginated(
+      page,
+      pageSize,
+    );
+
+    const mappedPosts = posts.map((post) => ({
+      id: post._id,
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      blogName: post.blogName,
+      createdAt: post.createdAt,
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: [],
+      },
+    }));
+
+    return {
+      posts: mappedPosts,
+      totalCount,
     };
   }
 }
