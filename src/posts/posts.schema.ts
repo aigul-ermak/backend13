@@ -18,6 +18,9 @@ export class Post {
   @Prop({ required: true })
   blogId: string;
 
+  @Prop({ required: true })
+  blogName: string;
+
   @Prop()
   createdAt: Date;
 
@@ -32,12 +35,14 @@ export class Post {
     shortDescription: string,
     content: string,
     blogId: string,
+    blogName: string,
   ): Post {
     const post = new Post();
     post.title = title;
     post.shortDescription = shortDescription;
     post.content = content;
     post.blogId = blogId;
+    post.blogName = blogName;
     post.createdAt = new Date();
     return post;
   }
