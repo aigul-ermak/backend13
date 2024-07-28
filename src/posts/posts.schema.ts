@@ -18,6 +18,9 @@ export class Post {
   @Prop({ required: true })
   blogId: string;
 
+  @Prop()
+  createdAt: Date;
+
   @Prop({ default: 0 })
   likesCount: number;
 
@@ -35,6 +38,7 @@ export class Post {
     post.shortDescription = shortDescription;
     post.content = content;
     post.blogId = blogId;
+    post.createdAt = new Date();
     return post;
   }
 }
