@@ -17,17 +17,6 @@ export class PostsRepository {
     return this.postModel.find().exec();
   }
 
-  // async findById(id: string): Promise<Post | null> {
-  //   return this.blogModel.findById(id).exec();
-  // }
-  //
-  // async deleteById(id: string): Promise<void> {
-  //   await this.blogModel.findByIdAndDelete(id).exec();
-  // }
-  //
-  // async findByName(name: string): Promise<Blog | null> {
-  //   return this.blogModel.findOne({ name }).exec();
-  // }
   async findById(id: any) {
     return Promise.resolve(id);
   }
