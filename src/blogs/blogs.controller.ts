@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { Blog } from './blogs.schema';
+import { CreateBlogDto } from './dto/create-blog.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -18,11 +19,7 @@ export class BlogsController {
   @Post()
   async create(
     @Body()
-    createBlogDto: {
-      name: string;
-      description: string;
-      websiteUrl: string;
-    },
+    createBlogDto: CreateBlogDto,
   ): Promise<{
     id: string;
     name: string;
