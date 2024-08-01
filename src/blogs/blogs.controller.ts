@@ -4,17 +4,22 @@ import {
   Delete,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
   Post,
   Query,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { Blog } from './blogs.schema';
-import { CreateBlogDto } from './dto/create-blog.dto';
+import { CreateBlogDto, CreatePostToBlogDto } from './dto/create-blog.dto';
+import { PostsService } from '../posts/posts.service';
 
 @Controller('blogs')
 export class BlogsController {
-  constructor(private blogsService: BlogsService) {}
+  constructor(
+    private blogsService: BlogsService,
+    private postsService: PostsService,
+  ) {}
 
   @Post()
   async create(
@@ -45,6 +50,34 @@ export class BlogsController {
     };
   }
 
+  @Post(':id/posts')
+  async createPost(
+    @Param('id') blogId: string,
+    @Body()
+    createPostToBlogDto: CreatePostToBlogDto,
+  ) {
+    const blog = await this.blogsService.findById(blogId);
+    if (!blog) {
+      throw new NotFoundException('Blog not found');
+    }
+
+    const createdPost = await this.postsService.create({
+      ...createPostToBlogDto,
+      blogId,
+    });
+
+    return {
+      id: createdPost.id,
+      title: createdPost.title,
+      shortDescription: createdPost.shortDescription,
+      content: createdPost.content,
+      blogId: createdPost.blogId,
+      blogName: createdPost.blogName,
+      createdAt: createdPost.createdAt,
+      extendedLikesInfo: createdPost.extendedLikesInfo,
+    };
+  }
+
   @Get()
   async getAllBlogs(
     @Query('page') page: number = 1,
@@ -71,6 +104,26 @@ export class BlogsController {
       totalCount,
       items: blogs,
     };
+  }
+
+  @Get(':id/posts')
+  async getPostsForBlog(@Param('id') id: string) {
+    const posts = await this.postsService.findByBlogId(id);
+    return posts.map((post) => ({
+      id: post._id.toString(),
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      blogName: post.blogName,
+      createdAt: post.createdAt,
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: [],
+      },
+    }));
   }
 
   @Get(':id')

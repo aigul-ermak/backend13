@@ -18,7 +18,7 @@ export class PostsRepository {
   }
 
   async findById(id: any) {
-    return Promise.resolve(id);
+    return this.postModel.findById(id).exec();
   }
 
   async findAllPaginated(
@@ -36,5 +36,13 @@ export class PostsRepository {
       this.postModel.countDocuments(),
     ]);
     return { posts, totalCount };
+  }
+
+  async deleteById(id: string): Promise<void> {
+    await this.postModel.findByIdAndDelete(id).exec();
+  }
+
+  async findByBlogId(blogId: string): Promise<PostDocument[]> {
+    return this.postModel.find({ blogId }).exec();
   }
 }

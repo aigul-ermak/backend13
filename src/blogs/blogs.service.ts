@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Blog } from './blogs.schema';
 import { BlogsRepository } from './blogs.repo';
 
@@ -11,10 +7,10 @@ export class BlogsService {
   constructor(private blogsRepo: BlogsRepository) {}
 
   async create(name: string, description: string, websiteUrl: string) {
-    const existingBlog = await this.blogsRepo.findByName(name);
-    if (existingBlog) {
-      throw new ConflictException(`Blog with name "${name}" already exists`);
-    }
+    // const existingBlog = await this.blogsRepo.findByName(name);
+    // if (existingBlog) {
+    //   throw new ConflictException(`Blog with name "${name}" already exists`);
+    // }
 
     const blog = Blog.create(name, description, websiteUrl);
     const createdBlog = await this.blogsRepo.insert(blog);

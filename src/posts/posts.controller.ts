@@ -1,6 +1,16 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { Blog } from '../blogs/blogs.schema';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -9,20 +19,10 @@ export class PostsController {
   @Post()
   async create(
     @Body()
-    createPostDto: {
-      title: string;
-      shortDescription: string;
-      content: string;
-      blogId: string;
-    },
+    createPostDto: CreatePostDto,
   ) {
-    const { title, shortDescription, content, blogId } = createPostDto;
-    const createdPost = await this.postsService.create(
-      title,
-      shortDescription,
-      content,
-      blogId,
-    );
+    //const { title, shortDescription, content, blogId } = createPostDto;
+    const createdPost = await this.postsService.create(createPostDto);
 
     return {
       id: createdPost.id,
@@ -62,5 +62,16 @@ export class PostsController {
       totalCount,
       items: posts,
     };
+  }
+
+  @Get(':id')
+  async getPostById(@Param('id') id: string) {
+    return this.postsService.findById(id);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async deletePost(@Param('id') id: string): Promise<void> {
+    await this.postsService.deletePostById(id);
   }
 }
