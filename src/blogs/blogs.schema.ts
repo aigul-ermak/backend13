@@ -9,7 +9,7 @@ export class Blog {
   @Prop()
   login: string;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   name: string;
 
   @Prop({ required: true })

@@ -20,8 +20,7 @@ export class PostsService {
     const { title, shortDescription, content, blogId } = createPostDto;
     const blog = await this.blogModel.findById(blogId).exec();
     if (!blog) {
-      console.error('Blog not found for blogId:', blogId);
-      throw new Error('Blog not found');
+      throw new NotFoundException('Blog not found');
     }
 
     const post = Post.create(
@@ -109,5 +108,17 @@ export class PostsService {
 
   async findByBlogId(blogId: string): Promise<PostDocument[]> {
     return await this.postsRepository.findByBlogId(blogId);
+  }
+
+  async countByBlogId(blogId: string): Promise<number> {
+    return await this.postsRepository.countByBlogId(blogId);
+  }
+
+  async findByBlogIdPaginated(blogId: string, skip: number, limit: number) {
+    return await this.postsRepository.findByBlogIdPaginated(
+      blogId,
+      skip,
+      limit,
+    );
   }
 }

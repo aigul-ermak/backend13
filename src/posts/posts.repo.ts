@@ -45,4 +45,21 @@ export class PostsRepository {
   async findByBlogId(blogId: string): Promise<PostDocument[]> {
     return this.postModel.find({ blogId }).exec();
   }
+
+  async countByBlogId(blogId: string) {
+    return this.postModel.countDocuments({ blogId }).exec();
+  }
+
+  async findByBlogIdPaginated(
+    blogId: string,
+    skip: number,
+    limit: number,
+  ): Promise<PostDocument[]> {
+    return this.postModel
+      .find({ blogId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+  }
 }

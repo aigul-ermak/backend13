@@ -25,14 +25,7 @@ export class BlogsController {
   async create(
     @Body()
     createBlogDto: CreateBlogDto,
-  ): Promise<{
-    id: string;
-    name: string;
-    description: string;
-    websiteUrl: string;
-    createdAt: Date;
-    isMembership: boolean;
-  }> {
+  ) {
     const { name, description, websiteUrl } = createBlogDto;
     const createdBlog = await this.blogsService.create(
       name,
@@ -56,10 +49,10 @@ export class BlogsController {
     @Body()
     createPostToBlogDto: CreatePostToBlogDto,
   ) {
-    const blog = await this.blogsService.findById(blogId);
-    if (!blog) {
-      throw new NotFoundException('Blog not found');
-    }
+    // const blog = await this.blogsService.findById(blogId);
+    // if (!blog) {
+    //   throw new NotFoundException('Blog not found');
+    // }
 
     const createdPost = await this.postsService.create({
       ...createPostToBlogDto,
@@ -80,50 +73,75 @@ export class BlogsController {
 
   @Get()
   async getAllBlogs(
-    @Query('page') page: number = 1,
-    @Query('pageSize') pageSize: number = 10,
-  ): Promise<{
-    pagesCount: number;
-    page: number;
-    pageSize: number;
-    totalCount: number;
-    items: Blog[];
-  }> {
-    page = Number(page);
-    pageSize = Number(pageSize);
+    @Query('page') pageNumber: string = '1',
+    @Query('pageSize') pageSize: string = '10',
+  ) {
+    const page = parseInt(pageNumber, 10);
+    const size = parseInt(pageSize, 10);
+
+    // page = Number(page);
+    // pageSize = Number(pageSize);
     const { blogs, totalCount } = await this.blogsService.findAllPaginated(
       page,
-      pageSize,
+      size,
     );
-    const pagesCount = Math.ceil(totalCount / pageSize);
+    const pagesCount = Math.ceil(totalCount / size);
 
     return {
       pagesCount,
       page,
-      pageSize,
+      pageSize: size,
       totalCount,
       items: blogs,
     };
   }
 
   @Get(':id/posts')
-  async getPostsForBlog(@Param('id') id: string) {
-    const posts = await this.postsService.findByBlogId(id);
-    return posts.map((post) => ({
-      id: post._id.toString(),
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: post.blogId,
-      blogName: post.blogName,
-      createdAt: post.createdAt,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None',
-        newestLikes: [],
-      },
-    }));
+  async getPostsForBlog(
+    @Param('id') id: string,
+    @Query('page') pageNumber: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+  ) {
+    // const pageNumber = parseInt(page, 10);
+    // const pageSizeNumber = parseInt(pageSize, 10);
+
+    const blog = await this.blogsService.findById(id);
+    if (!blog) {
+      throw new NotFoundException('Blog not found');
+    }
+
+    const totalCount = await this.postsService.countByBlogId(id);
+    const pagesCount = Math.ceil(totalCount / +pageSize);
+
+    const skip = (+pageNumber - 1) * +pageSize;
+    const posts = await this.postsService.findByBlogIdPaginated(
+      id,
+      skip,
+      +pageSize,
+    );
+
+    //const posts = await this.postsService.findByBlogId(id);
+    return {
+      pagesCount,
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount,
+      items: posts.map((post) => ({
+        id: post._id.toString(),
+        title: post.title,
+        shortDescription: post.shortDescription,
+        content: post.content,
+        blogId: post.blogId,
+        blogName: post.blogName,
+        createdAt: post.createdAt,
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None',
+          newestLikes: [],
+        },
+      })),
+    };
   }
 
   @Get(':id')

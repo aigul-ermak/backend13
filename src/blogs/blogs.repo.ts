@@ -7,6 +7,16 @@ import { Blog, BlogDocument } from './blogs.schema';
 export class BlogsRepository {
   constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
 
+  async onModuleInit() {
+    try {
+      await this.blogModel.collection.dropIndex('name_1');
+    } catch (err) {
+      if (err.code !== 27) {
+        throw err;
+      }
+    }
+  }
+
   async insert(blog: Blog) {
     const res: BlogDocument[] = await this.blogModel.insertMany(blog);
     return res[0];
