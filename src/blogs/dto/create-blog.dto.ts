@@ -9,3 +9,9 @@ export class CreatePostToBlogDto {
   shortDescription: string;
   content: string;
 }
+
+export class UpdateBlogDto {
+  name: string;
+  description: string;
+  websiteUrl: string;
+}

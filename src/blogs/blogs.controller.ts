@@ -7,11 +7,15 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
-import { Blog } from './blogs.schema';
-import { CreateBlogDto, CreatePostToBlogDto } from './dto/create-blog.dto';
+import {
+  CreateBlogDto,
+  CreatePostToBlogDto,
+  UpdateBlogDto,
+} from './dto/create-blog.dto';
 import { PostsService } from '../posts/posts.service';
 
 @Controller('blogs')
@@ -41,6 +45,14 @@ export class BlogsController {
       createdAt: createdBlog!.createdAt,
       isMembership: createdBlog!.isMembership,
     };
+  }
+  @Put(':id')
+  @HttpCode(204)
+  async updateBlog(
+    @Param('id') id: string,
+    @Body() updateBlogDto: UpdateBlogDto,
+  ) {
+    return this.blogsService.update(id, updateBlogDto);
   }
 
   @Post(':id/posts')
@@ -73,24 +85,25 @@ export class BlogsController {
 
   @Get()
   async getAllBlogs(
-    @Query('page') pageNumber: string = '1',
-    @Query('pageSize') pageSize: string = '10',
+    @Query('pageNumber') pageNumber?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('sortDirection') sortDirection?: string,
   ) {
-    const page = parseInt(pageNumber, 10);
-    const size = parseInt(pageSize, 10);
+    const page = pageNumber ?? 1;
+    const size = pageSize ?? 10;
+    const direction = sortDirection?.toLowerCase() === 'asc' ? 'asc' : 'desc';
 
-    // page = Number(page);
-    // pageSize = Number(pageSize);
     const { blogs, totalCount } = await this.blogsService.findAllPaginated(
       page,
       size,
+      direction,
     );
     const pagesCount = Math.ceil(totalCount / size);
 
     return {
       pagesCount,
-      page,
-      pageSize: size,
+      page: +page,
+      pageSize: +size,
       totalCount,
       items: blogs,
     };
@@ -99,11 +112,12 @@ export class BlogsController {
   @Get(':id/posts')
   async getPostsForBlog(
     @Param('id') id: string,
-    @Query('page') pageNumber: number = 1,
-    @Query('pageSize') pageSize: number = 10,
+    @Query('page') pageNumber?: number,
+    @Query('pageSize') pageSize?: number,
   ) {
-    // const pageNumber = parseInt(page, 10);
-    // const pageSizeNumber = parseInt(pageSize, 10);
+    const page = pageNumber ?? 1;
+    const size = pageSize ?? 10;
+    //const direction = sortDirection?.toLowerCase() === 'asc' ? 'asc' : 'desc';
 
     const blog = await this.blogsService.findById(id);
     if (!blog) {
@@ -111,20 +125,21 @@ export class BlogsController {
     }
 
     const totalCount = await this.postsService.countByBlogId(id);
-    const pagesCount = Math.ceil(totalCount / +pageSize);
+    const pagesCount = Math.ceil(totalCount / +size);
 
-    const skip = (+pageNumber - 1) * +pageSize;
+    const skip = (page - 1) * size;
     const posts = await this.postsService.findByBlogIdPaginated(
       id,
       skip,
-      +pageSize,
+      +size,
+      //direction,
     );
 
     //const posts = await this.postsService.findByBlogId(id);
     return {
       pagesCount,
-      page: pageNumber,
-      pageSize: pageSize,
+      page: +page,
+      pageSize: +size,
       totalCount,
       items: posts.map((post) => ({
         id: post._id.toString(),

@@ -7,10 +7,11 @@ import {
 } from '@nestjs/common';
 import { Blog } from './blogs.schema';
 import { BlogsRepository } from './blogs.repo';
+import { UpdateBlogDto } from './dto/create-blog.dto';
 
 @Injectable()
 export class BlogsService {
-  constructor(private blogsRepo: BlogsRepository) {}
+  constructor(private blogsRepository: BlogsRepository) {}
 
   async create(name: string, description: string, websiteUrl: string) {
     // const existingBlog = await this.blogsRepo.findByName(name);
@@ -20,17 +21,17 @@ export class BlogsService {
     // }
 
     const blog = Blog.create(name, description, websiteUrl);
-    const createdBlog = await this.blogsRepo.insert(blog);
+    const createdBlog = await this.blogsRepository.insert(blog);
 
-    return await this.blogsRepo.findById(createdBlog.id);
+    return await this.blogsRepository.findById(createdBlog.id);
   }
 
   async findAll(): Promise<Blog[]> {
-    return this.blogsRepo.findAll();
+    return this.blogsRepository.findAll();
   }
 
   async findById(id: string) {
-    const blog = await this.blogsRepo.findById(id);
+    const blog = await this.blogsRepository.findById(id);
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${id} not found`);
     }
@@ -45,16 +46,18 @@ export class BlogsService {
   }
 
   async deleteBlogById(id: string): Promise<void> {
-    await this.blogsRepo.deleteById(id);
+    await this.blogsRepository.deleteById(id);
   }
 
   async findAllPaginated(
     page: number,
     pageSize: number,
+    sortDirection: 'asc' | 'desc',
   ): Promise<{ blogs: any[]; totalCount: number }> {
-    const { blogs, totalCount } = await this.blogsRepo.findAllPaginated(
+    const { blogs, totalCount } = await this.blogsRepository.findAllPaginated(
       page,
       pageSize,
+      sortDirection,
     );
 
     const mappedBlogs = blogs.map((blog) => ({
@@ -70,5 +73,13 @@ export class BlogsService {
       blogs: mappedBlogs,
       totalCount,
     };
+  }
+
+  async update(id: string, updateBlogDto: UpdateBlogDto) {
+    const updatedBlog = await this.blogsRepository.update(id, updateBlogDto);
+    if (!updatedBlog) {
+      throw new NotFoundException(`Blog with ID ${id} not found`);
+    }
+    return updatedBlog;
   }
 }

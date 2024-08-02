@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Blog, BlogDocument } from './blogs.schema';
+import { UpdateBlogDto } from './dto/create-blog.dto';
 
 @Injectable()
 export class BlogsRepository {
@@ -41,17 +42,24 @@ export class BlogsRepository {
   async findAllPaginated(
     page: number,
     pageSize: number,
+    sortDirection: 'asc' | 'desc',
   ): Promise<{ blogs: BlogDocument[]; totalCount: number }> {
     const skip = (page - 1) * pageSize;
     const [blogs, totalCount] = await Promise.all([
       this.blogModel
         .find()
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: sortDirection })
         .skip(skip)
         .limit(pageSize)
         .exec(), // Sort by createdAt
       this.blogModel.countDocuments(),
     ]);
     return { blogs, totalCount };
+  }
+
+  async update(id: string, updateBlogDto: UpdateBlogDto) {
+    return this.blogModel
+      .findByIdAndUpdate(id, updateBlogDto, { new: true })
+      .exec();
   }
 }
