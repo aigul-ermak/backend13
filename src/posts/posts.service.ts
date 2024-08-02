@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../blogs/blogs.schema';
 import { Model } from 'mongoose';
 import { BlogsRepository } from '../blogs/blogs.repo';
-import { CreatePostDto } from './dto/create-post.dto';
+import { CreatePostDto, UpdatePostDto } from './dto/create-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -120,5 +120,13 @@ export class PostsService {
       skip,
       limit,
     );
+  }
+
+  async update(id: string, updatePostDto: UpdatePostDto) {
+    const updatedPost = await this.postsRepository.update(id, updatePostDto);
+    if (!updatedPost) {
+      throw new NotFoundException(`Post with ID ${id} not found`);
+    }
+    return updatedPost;
   }
 }

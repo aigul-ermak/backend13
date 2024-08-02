@@ -6,11 +6,13 @@ import {
   HttpCode,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { Blog } from '../blogs/blogs.schema';
-import { CreatePostDto } from './dto/create-post.dto';
+import { CreatePostDto, UpdatePostDto } from './dto/create-post.dto';
+import { UpdateBlogDto } from '../blogs/dto/create-blog.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -34,6 +36,15 @@ export class PostsController {
       createdAt: createdPost.createdAt,
       extendedLikesInfo: createdPost.extendedLikesInfo,
     };
+  }
+
+  @Put(':id')
+  @HttpCode(204)
+  async updatePost(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
+    return this.postsService.update(id, updatePostDto);
   }
 
   @Get()
