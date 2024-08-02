@@ -46,12 +46,18 @@ export class BlogsController {
       isMembership: createdBlog!.isMembership,
     };
   }
+
   @Put(':id')
   @HttpCode(204)
   async updateBlog(
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
   ) {
+    // const blog = await this.blogsService.findById(id);
+    // if (!blog) {
+    //   throw new NotFoundException('Blog not found');
+    // }
+
     return this.blogsService.update(id, updateBlogDto);
   }
 
@@ -61,11 +67,6 @@ export class BlogsController {
     @Body()
     createPostToBlogDto: CreatePostToBlogDto,
   ) {
-    // const blog = await this.blogsService.findById(blogId);
-    // if (!blog) {
-    //   throw new NotFoundException('Blog not found');
-    // }
-
     const createdPost = await this.postsService.create({
       ...createPostToBlogDto,
       blogId,
@@ -85,18 +86,24 @@ export class BlogsController {
 
   @Get()
   async getAllBlogs(
+    @Query('searchNameTerm') searchNameTerm?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortDirection') sortDirection?: string,
     @Query('pageNumber') pageNumber?: number,
     @Query('pageSize') pageSize?: number,
-    @Query('sortDirection') sortDirection?: string,
   ) {
+    const searchTerm = searchNameTerm ?? '';
+    const sort = sortBy ?? 'createdAt';
+    const direction = sortDirection?.toLowerCase() === 'asc' ? 'asc' : 'desc';
     const page = pageNumber ?? 1;
     const size = pageSize ?? 10;
-    const direction = sortDirection?.toLowerCase() === 'asc' ? 'asc' : 'desc';
 
     const { blogs, totalCount } = await this.blogsService.findAllPaginated(
+      searchTerm,
+      sort,
+      direction,
       page,
       size,
-      direction,
     );
     const pagesCount = Math.ceil(totalCount / size);
 

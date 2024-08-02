@@ -50,14 +50,18 @@ export class BlogsService {
   }
 
   async findAllPaginated(
+    searchTerm: string,
+    sort: string,
+    direction: 'asc' | 'desc',
     page: number,
     pageSize: number,
-    sortDirection: 'asc' | 'desc',
   ): Promise<{ blogs: any[]; totalCount: number }> {
     const { blogs, totalCount } = await this.blogsRepository.findAllPaginated(
+      searchTerm,
+      sort,
+      direction,
       page,
       pageSize,
-      sortDirection,
     );
 
     const mappedBlogs = blogs.map((blog) => ({
