@@ -27,6 +27,7 @@
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "mongoose": "^8.5.1",
+    "ngrok": "^5.0.0-beta.2",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "ts-node-dev": "^2.0.0"
@@ -54,22 +55,5 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   }
 }
