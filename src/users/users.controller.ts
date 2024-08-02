@@ -7,6 +7,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.schema';
@@ -27,8 +28,37 @@ export class UsersController {
   }
 
   @Get()
-  async getAllUsers(): Promise<User[]> {
-    return this.userService.findAll();
+  async getAllUsers(
+    @Query('sortBy') sortBy?: string,
+    @Query('sortDirection') sortDirection?: string,
+    @Query('pageNumber') pageNumber?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('searchLoginTerm') searchLoginTerm?: string,
+    @Query('searchEmailTerm') searchEmailTerm?: string,
+  ) {
+    const sort = sortBy ?? 'createdAt';
+    const direction = sortDirection?.toLowerCase() === 'asc' ? 'asc' : 'desc';
+    const page = pageNumber ?? 1;
+    const size = pageSize ?? 10;
+
+    //return this.userService.findAll();
+    const { users, totalCount } = await this.userService.findAllPaginated(
+      sort,
+      direction,
+      page,
+      size,
+      searchLoginTerm,
+      searchEmailTerm,
+    );
+    const pagesCount = Math.ceil(totalCount / size);
+
+    return {
+      pagesCount,
+      page,
+      pageSize: size,
+      totalCount,
+      items: users,
+    };
   }
 
   @Delete(':id')

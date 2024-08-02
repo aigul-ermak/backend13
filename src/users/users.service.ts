@@ -6,7 +6,7 @@ import { UsersRepository } from './users.repo';
 
 @Injectable()
 export class UsersService {
-  constructor(private userRepo: UsersRepository) {}
+  constructor(private usersRepository: UsersRepository) {}
 
   async create(
     email: string,
@@ -21,7 +21,7 @@ export class UsersService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = User.create(name, email, hashedPassword);
-    const createdUser = await this.userRepo.create(user);
+    const createdUser = await this.usersRepository.create(user);
 
     return {
       id: createdUser._id.toString(),
@@ -32,7 +32,7 @@ export class UsersService {
   }
 
   async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userRepo.findOne(email);
+    const user = await this.usersRepository.findOne(email);
     if (user && (await bcrypt.compare(password, user.password))) {
       return user;
     }
@@ -40,10 +40,28 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.userRepo.findAll();
+    return this.usersRepository.findAll();
   }
 
   async deleteUserById(id: string): Promise<boolean> {
-    return await this.userRepo.deleteById(id);
+    return await this.usersRepository.deleteById(id);
+  }
+
+  async findAllPaginated(
+    sort: string,
+    direction: 'asc' | 'desc',
+    page: number,
+    pageSize: number,
+    searchLoginTerm?: string,
+    searchEmailTerm?: string,
+  ): Promise<{ users: User[]; totalCount: number }> {
+    return await this.usersRepository.findAllPaginated(
+      sort,
+      direction,
+      page,
+      pageSize,
+      searchLoginTerm,
+      searchEmailTerm,
+    );
   }
 }
