@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, SortOrder } from 'mongoose';
 import { Post, PostDocument } from './posts.schema';
 import { BlogDocument } from '../blogs/blogs.schema';
 import { UpdatePostDto } from './dto/create-post.dto';
@@ -55,10 +55,16 @@ export class PostsRepository {
     blogId: string,
     skip: number,
     limit: number,
+    sort: string,
+    direction: 'asc' | 'desc',
   ): Promise<PostDocument[]> {
+    const sortOption: { [key: string]: SortOrder } = {
+      [sort]: direction === 'asc' ? 1 : -1,
+    };
+
     return this.postModel
       .find({ blogId })
-      .sort({ createdAt: -1 })
+      .sort(sortOption)
       .skip(skip)
       .limit(limit)
       .exec();

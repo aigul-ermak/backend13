@@ -119,12 +119,18 @@ export class BlogsController {
   @Get(':id/posts')
   async getPostsForBlog(
     @Param('id') id: string,
-    @Query('page') pageNumber?: number,
+    @Query('pageNumber') pageNumber?: number,
     @Query('pageSize') pageSize?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortDirection') sortDirection?: string,
   ) {
+    // const page = pageNumber ?? 1;
+    // const size = pageSize ?? 10;
+
+    const sort = sortBy ?? 'createdAt';
+    const direction = sortDirection?.toLowerCase() === 'asc' ? 'asc' : 'desc';
     const page = pageNumber ?? 1;
     const size = pageSize ?? 10;
-    //const direction = sortDirection?.toLowerCase() === 'asc' ? 'asc' : 'desc';
 
     const blog = await this.blogsService.findById(id);
     if (!blog) {
@@ -138,8 +144,9 @@ export class BlogsController {
     const posts = await this.postsService.findByBlogIdPaginated(
       id,
       skip,
-      +size,
-      //direction,
+      size,
+      sort,
+      direction,
     );
 
     //const posts = await this.postsService.findByBlogId(id);

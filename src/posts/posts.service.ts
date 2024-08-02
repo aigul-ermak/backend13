@@ -114,11 +114,19 @@ export class PostsService {
     return await this.postsRepository.countByBlogId(blogId);
   }
 
-  async findByBlogIdPaginated(blogId: string, skip: number, limit: number) {
+  async findByBlogIdPaginated(
+    blogId: string,
+    skip: number,
+    limit: number,
+    sort: string,
+    direction: 'asc' | 'desc',
+  ) {
     return await this.postsRepository.findByBlogIdPaginated(
       blogId,
       skip,
       limit,
+      sort,
+      direction,
     );
   }
 
