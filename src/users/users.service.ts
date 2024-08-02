@@ -13,10 +13,10 @@ export class UsersService {
     name: string,
     password: string,
   ): Promise<{ id: string; login: string; email: string; createdAt: Date }> {
-    const existingUser = await this.userRepo.findOne(email);
-    if (existingUser) {
-      throw new ConflictException(`Blog with name "${name}" already exists`);
-    }
+    // const existingUser = await this.userRepo.findOne(email);
+    // if (existingUser) {
+    //   throw new ConflictException(`Blog with name "${name}" already exists`);
+    // }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -43,7 +43,7 @@ export class UsersService {
     return this.userRepo.findAll();
   }
 
-  async deleteUserById(id: string): Promise<void> {
-    await this.userRepo.deleteById(id);
+  async deleteUserById(id: string): Promise<boolean> {
+    return await this.userRepo.deleteById(id);
   }
 }

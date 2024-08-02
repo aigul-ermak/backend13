@@ -7,6 +7,16 @@ import { Model } from 'mongoose';
 export class UsersRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
+  async onModuleInit() {
+    try {
+      await this.userModel.collection.dropIndex('email_1');
+    } catch (err) {
+      if (err.code !== 27) {
+        // 27 = IndexNotFound
+        throw err;
+      }
+    }
+  }
   async create(user: User): Promise<User> {
     const createdUser = new this.userModel(user);
     return createdUser.save();
@@ -20,7 +30,8 @@ export class UsersRepository {
     return this.userModel.find().exec();
   }
 
-  async deleteById(id: string): Promise<void> {
-    await this.userModel.findByIdAndDelete(id).exec();
+  async deleteById(id: string): Promise<boolean> {
+    const result = await this.userModel.findByIdAndDelete(id).exec();
+    return result !== null;
   }
 }
