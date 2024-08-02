@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -83,6 +84,9 @@ export class PostsController {
   @Delete(':id')
   @HttpCode(204)
   async deletePost(@Param('id') id: string): Promise<void> {
-    await this.postsService.deletePostById(id);
+    const result = await this.postsService.deletePostById(id);
+    if (!result) {
+      throw new NotFoundException(`Blog with id ${id} not found`);
+    }
   }
 }
