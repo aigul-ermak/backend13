@@ -45,8 +45,8 @@ export class BlogsService {
     };
   }
 
-  async deleteBlogById(id: string): Promise<void> {
-    await this.blogsRepository.deleteById(id);
+  async deleteBlogById(id: string): Promise<boolean> {
+    return await this.blogsRepository.deleteById(id);
   }
 
   async findAllPaginated(

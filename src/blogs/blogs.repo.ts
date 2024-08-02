@@ -31,8 +31,9 @@ export class BlogsRepository {
     return this.blogModel.findById(id).exec();
   }
 
-  async deleteById(id: string): Promise<void> {
-    await this.blogModel.findByIdAndDelete(id).exec();
+  async deleteById(id: string): Promise<boolean> {
+    const result = await this.blogModel.findByIdAndDelete(id).exec();
+    return result !== null;
   }
 
   async findByName(name: string): Promise<Blog | null> {
