@@ -52,10 +52,14 @@ export class PostsService {
   async findAllPaginated(
     page: number,
     pageSize: number,
+    sort: string,
+    direction: 'asc' | 'desc',
   ): Promise<{ posts: any[]; totalCount: number }> {
     const { posts, totalCount } = await this.postsRepository.findAllPaginated(
       page,
       pageSize,
+      sort,
+      direction,
     );
 
     const mappedPosts = posts.map((post) => ({

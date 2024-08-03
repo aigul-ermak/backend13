@@ -25,15 +25,16 @@ export class PostsRepository {
   async findAllPaginated(
     page: number,
     pageSize: number,
+    sort: string,
+    sortDirection: 'asc' | 'desc',
   ): Promise<{ posts: PostDocument[]; totalCount: number }> {
     const skip = (page - 1) * pageSize;
+    const sortOption: { [key: string]: SortOrder } = {
+      [sort]: sortDirection === 'asc' ? 1 : -1,
+    };
+
     const [posts, totalCount] = await Promise.all([
-      this.postModel
-        .find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(pageSize)
-        .exec(), // Sort by createdAt
+      this.postModel.find().sort(sortOption).skip(skip).limit(pageSize).exec(), // Sort by createdAt
       this.postModel.countDocuments(),
     ]);
     return { posts, totalCount };

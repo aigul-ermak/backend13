@@ -50,8 +50,10 @@ export class PostsController {
 
   @Get()
   async getAllPosts(
-    @Query('page') page: number = 1,
-    @Query('pageSize') pageSize: number = 10,
+    @Query('pageNumber') pageNumber: number,
+    @Query('pageSize') pageSize: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortDirection') sortDirection?: string,
   ): Promise<{
     pagesCount: number;
     page: number;
@@ -59,18 +61,23 @@ export class PostsController {
     totalCount: number;
     items: Blog[];
   }> {
-    page = Number(page);
-    pageSize = Number(pageSize);
+    const sort = sortBy ?? 'createdAt';
+    const direction = sortDirection?.toLowerCase() === 'asc' ? 'asc' : 'desc';
+    const page = pageNumber ?? 1;
+    const size = pageSize ?? 10;
+
     const { posts, totalCount } = await this.postsService.findAllPaginated(
       page,
-      pageSize,
+      size,
+      sort,
+      direction,
     );
-    const pagesCount = Math.ceil(totalCount / pageSize);
+    const pagesCount = Math.ceil(totalCount / size);
 
     return {
       pagesCount,
-      page,
-      pageSize,
+      page: +page,
+      pageSize: +size,
       totalCount,
       items: posts,
     };
