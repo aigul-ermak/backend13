@@ -51,16 +51,16 @@ export class UsersRepository {
     const filter: any = {
       $or: [],
     };
-    if (searchEmailTerm) {
-      const emailPattern = searchEmailTerm.replace(/%/g, '.*');
-      filter.$or.push({
-        email: { $regex: emailPattern, $options: 'i' },
-      });
-    }
     if (searchLoginTerm) {
       const loginPattern = searchLoginTerm.replace(/%/g, '.*');
       filter.$or.push({
         login: { $regex: loginPattern, $options: 'i' },
+      });
+    }
+    if (searchEmailTerm) {
+      const emailPattern = searchEmailTerm.replace(/%/g, '.*');
+      filter.$or.push({
+        email: { $regex: emailPattern, $options: 'i' },
       });
     }
 
