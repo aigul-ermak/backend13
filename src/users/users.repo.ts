@@ -48,22 +48,38 @@ export class UsersRepository {
       [sort]: direction === 'asc' ? 1 : -1,
     };
 
-    const searchFilters: any = {};
-    if (searchLoginTerm) {
-      searchFilters.login = new RegExp(searchLoginTerm, 'i');
-    }
+    const filter: any = {
+      $or: [],
+    };
     if (searchEmailTerm) {
-      searchFilters.email = new RegExp(searchEmailTerm, 'i');
+      const emailPattern = searchEmailTerm.replace(/%/g, '.*');
+      filter.$or.push({
+        email: { $regex: emailPattern, $options: 'i' },
+      });
     }
+    if (searchLoginTerm) {
+      const loginPattern = searchLoginTerm.replace(/%/g, '.*');
+      filter.$or.push({
+        login: { $regex: loginPattern, $options: 'i' },
+      });
+    }
+
+    // If no search terms are provided, match all documents
+    if (filter.$or.length === 0) {
+      delete filter.$or;
+    }
+
+    console.log('Search Filters:', filter);
+    console.log('Sort Option:', sortOption);
 
     const [users, totalCount] = await Promise.all([
       this.userModel
-        .find(searchFilters)
+        .find(filter)
         .sort(sortOption)
         .skip(skip)
         .limit(pageSize)
         .exec(),
-      this.userModel.countDocuments(searchFilters),
+      this.userModel.countDocuments(filter),
     ]);
 
     return { users, totalCount };

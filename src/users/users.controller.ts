@@ -40,6 +40,8 @@ export class UsersController {
     const direction = sortDirection?.toLowerCase() === 'asc' ? 'asc' : 'desc';
     const page = pageNumber ?? 1;
     const size = pageSize ?? 10;
+    const searchLogin = searchLoginTerm ?? '';
+    const searchEmail = searchEmailTerm ?? '';
 
     //return this.userService.findAll();
     const { users, totalCount } = await this.userService.findAllPaginated(
@@ -47,15 +49,15 @@ export class UsersController {
       direction,
       page,
       size,
-      searchLoginTerm,
-      searchEmailTerm,
+      searchLogin,
+      searchEmail,
     );
     const pagesCount = Math.ceil(totalCount / size);
 
     return {
       pagesCount,
-      page,
-      pageSize: size,
+      page: +page,
+      pageSize: +size,
       totalCount,
       items: users,
     };

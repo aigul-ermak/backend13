@@ -52,16 +52,28 @@ export class UsersService {
     direction: 'asc' | 'desc',
     page: number,
     pageSize: number,
-    searchLoginTerm?: string,
-    searchEmailTerm?: string,
-  ): Promise<{ users: User[]; totalCount: number }> {
-    return await this.usersRepository.findAllPaginated(
+    searchLogin: string,
+    searchEmail: string,
+  ) {
+    const { users, totalCount } = await this.usersRepository.findAllPaginated(
       sort,
       direction,
       page,
       pageSize,
-      searchLoginTerm,
-      searchEmailTerm,
+      searchLogin,
+      searchEmail,
     );
+
+    const mappedUsers = users.map((user) => ({
+      id: user._id.toString(),
+      login: user.login,
+      email: user.email,
+      createdAt: user.createdAt,
+    }));
+
+    return {
+      users: mappedUsers,
+      totalCount,
+    };
   }
 }
